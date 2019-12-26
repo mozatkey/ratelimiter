@@ -72,7 +72,6 @@ std::chrono::microseconds RateLimiter::claim_next(double permits) {
 
     next_free_ += next_free;
     stored_permits_ -= stored;
-
     return microseconds(wait);
 }
 
@@ -82,8 +81,10 @@ double RateLimiter::get_rate() const {
 void RateLimiter::set_rate(double rate) {
     if (rate <= 0.0) {
         throw std::runtime_error("RateLimiter: Rate must be greater than 0");
-  }
+    }
 
-    std::lock_guard<std::mutex> lock(mut_);
-    interval_ = 1000000.0 / rate;
+    std::lock_guard<std::mutex> lock(mut_);  
+    next_free_   = 0;
+    interval_    = 1000000.0 / rate;
+    max_permits_ = stored_permits_ = rate > 1 ? rate : 0;
 }

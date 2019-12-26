@@ -112,11 +112,13 @@ bool test_rate() {
     RateLimiterInterface* limiter = new RateLimiter();
 
     // Initial test. Set rate to 1.0, measure
-    limiter->set_rate(1);
-    assert(limiter->get_rate() == 1);
+    limiter->set_rate(2);
+    assert(limiter->get_rate() == 2);
 
     long long start = GET_TIME;
 
+    limiter->aquire();
+    limiter->aquire();
     limiter->aquire();
     limiter->aquire();
 
@@ -167,13 +169,13 @@ bool test_concurrent() {
     // Note: We cannot simply do a bunch of std::async without storing
     //       future, since it will trigger the future's destructor, causing it
     //       to be synchronous.
-    std::future<bool> results[1000];
+    std::future<bool> results[1100];
 
     long start = GET_TIME;
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < 1100; i++)
         results[i] = std::async(std::launch::async, [limiter]() { limiter->aquire(); return true; });
 
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < 1100; i++)
         assert(results[i].get());
     long end = GET_TIME;
 

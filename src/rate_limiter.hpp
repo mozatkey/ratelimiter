@@ -10,7 +10,7 @@ public:
     long aquire();
     long aquire(int permits);
 
-    bool try_aquire(int timeouts);
+    bool try_aquire(int permits);
     bool try_aquire(int permits, int timeout);
 
     double get_rate() const;
